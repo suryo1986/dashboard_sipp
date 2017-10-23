@@ -8,18 +8,17 @@ class Dashboard_model extends CI_Model {
 	
 	function fetch_upcoming_delegasi_keluar(){		
 			
-		$sql = "SELECT * FROM delegasi_keluar dk, delegasi_proses_keluar dpk
-                WHERE  dpk.`delegasi_id`=dk.`id`
-                AND tgl_sidang > NOW() AND tgl_sidang - 7 < NOW() ORDER BY tgl_sidang ASC ";
+		$sql = "SELECT * FROM delegasi_keluar dk
+                 WHERE  tgl_sidang  > DATE_ADD( NOW(),INTERVAL -1 DAY) AND tgl_sidang < DATE_ADD( NOW(),INTERVAL 7 DAY) ORDER BY tgl_sidang ASC";
 		#	echo "<pre>$sql</pre>";
 		return $this->db->query($sql)->result_array();				
 	}
 	
 	function fetch_upcoming_delegasi_masuk(){		
 			
-		$sql = "SELECT * FROM delegasi_masuk dm, delegasi_proses_masuk dpm
-                WHERE  dpm.`delegasi_id`=dm.`id`
-                AND tgl_sidang > NOW() AND tgl_sidang - 7 < NOW() ORDER BY tgl_sidang ASC ";
+		$sql = "SELECT * FROM delegasi_masuk dm LEFT OUTER JOIN delegasi_proses_masuk dpm
+                ON  dpm.`delegasi_id`=dm.`id`
+                 WHERE  tgl_sidang  > DATE_ADD( NOW(),INTERVAL -1 DAY) AND tgl_sidang < DATE_ADD( NOW(),INTERVAL 7 DAY) ORDER BY tgl_sidang ASC";
 		#	echo "<pre>$sql</pre>";
 		return $this->db->query($sql)->result_array();				
 	}
@@ -202,7 +201,7 @@ ORDER BY ket ASC";
     	{
     		$sql = "SELECT DISTINCT * FROM perkara AS a LEFT JOIN perkara_ikrar_talak AS b ON a.`perkara_id`=b.`perkara_id`
     LEFT JOIN perkara_putusan AS c ON a.`perkara_id`=c.`perkara_id` join perkara_hakim_pn as d on a.`perkara_id`=d.`perkara_id`
-    WHERE a.jenis_perkara_id='346' AND YEAR(a.tanggal_pendaftaran)=YEAR(NOW())
+    WHERE a.jenis_perkara_id='346' AND YEAR(a.tanggal_pendaftaran)=YEAR(NOW()) and c.status_putusan_id=62
     and b.`penetapan_majelis_hakim` is NULL  AND c.tanggal_bht IS NOT NULL and jabatan_hakim_id=1 and d.`aktif`='Y'";
 
     		$query = $this->db->query($sql);
